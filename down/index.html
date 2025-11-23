@@ -24,6 +24,7 @@
     z-index: 9999;
     padding: 20px;
     box-sizing: border-box;
+    transition: opacity 0.3s ease;
 }
 
 /* 安全访问文字样式 */
@@ -58,6 +59,31 @@
     max-width: 300px;
 }
 
+/* 错误提示样式 */
+.error-tip {
+    color: #dc3545; /* 错误红 */
+    font-size: 14px;
+    margin-top: 20px;
+    text-align: center;
+    max-width: 300px;
+}
+
+/* 重试按钮样式 */
+.retry-btn {
+    margin-top: 15px;
+    padding: 8px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.retry-btn:hover {
+    background-color: #0056b3;
+}
+
 /* 二维码容器样式 */
 .qrcode-container {
     display: flex;
@@ -79,8 +105,17 @@
     height:100%;
     width:100%;
     position: fixed;
-    left: -2px;
-    top: -2px;
+    left: 0;
+    top: 0;
+    border: none; /* 移除边框 */
+    z-index: 1;
+}
+
+/* 隐藏元素 */
+.hidden {
+    opacity: 0;
+    pointer-events: none;
+    z-index: -1;
 }
 </style>
 </head>
@@ -96,99 +131,148 @@
         <div id="qrcode"></div>
         <div class="qrcode-desc">当前页面二维码 · 安全访问</div>
     </div>
+    
+    <!-- 错误提示（默认隐藏） -->
+    <div class="error-tip" id="errorTip" style="display: none;">
+        页面加载失败，请检查网络或重试
+    </div>
+    <button class="retry-btn" id="retryBtn" style="display: none;" onclick="window.location.reload()">
+        重新加载
+    </button>
 </div>
 
 <script>
-// 立即执行参数解析和处理，无任何延迟
-(function() {
-    var urlParams = new URLSearchParams(window.location.search);
-    var encodedParam = urlParams.get('c');
-    var tureurl = atob(encodedParam);
-
-    // 生成当前页面的二维码（包含完整参数）
-    generateQrcode(window.location.href);
-
-    if (tureurl.includes("http")) {
-        // 立即隐藏加载动画，不添加任何延迟
-        var loadingContainer = document.getElementById("loadingContainer");
-        loadingContainer.style.display = "none";
-
-        // 直接插入iframe
-        var html = '<iframe class="content" onload="bindMouseWhee(this)" src="' + tureurl + '"></iframe>';
-        document.writeln(html);
-        console.log(tureurl);
-    } else {
-        console.log("nourls");
+// 解码URL参数并验证
+function decodeAndValidateUrl() {
+    try {
+        var urlParams = new URLSearchParams(window.location.search);
+        var encodedParam = urlParams.get('c');
+        if (!encodedParam) {
+            throw new Error("缺少访问参数");
+        }
+        // 解码Base64参数（处理URL安全的Base64）
+        var tureurl = atob(encodedParam.replace(/-/g, '+').replace(/_/g, '/'));
+        // 验证是否为合法URL
+        new URL(tureurl); // 触发URL格式验证
+        return tureurl;
+    } catch (e) {
+        console.error("URL解析失败:", e);
+        return null;
     }
-})();
+}
 
 // 生成二维码函数
 function generateQrcode(url) {
     try {
-        // 确保qrcode库已加载
         if (typeof QRCode !== 'undefined') {
             new QRCode(document.getElementById('qrcode'), {
-                text: url, // 二维码内容为当前页面完整URL
-                width: 120, // 二维码宽度
-                height: 120, // 二维码高度
-                colorDark: '#000000', // 前景色
-                colorLight: '#ffffff', // 背景色
-                correctLevel: QRCode.CorrectLevel.L // 纠错级别（L/M/Q/H）
+                text: url,
+                width: 120,
+                height: 120,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.M // 提高纠错级别
             });
         } else {
-            console.log('二维码库加载失败，无法生成二维码');
-            document.getElementById('qrcode').innerHTML = '<div style="color:#dc3545;font-size:12px;">二维码生成失败</div>';
+            console.log('二维码库加载失败');
         }
     } catch (e) {
-        console.log('生成二维码出错:', e);
-        document.getElementById('qrcode').innerHTML = '<div style="color:#dc3545;font-size:12px;">二维码生成失败</div>';
+        console.error('生成二维码出错:', e);
     }
 }
-</script>
 
-<script>
+// 初始化页面
+(function() {
+    // 生成当前页面二维码
+    generateQrcode(window.location.href);
+    
+    // 解码并验证目标URL
+    var targetUrl = decodeAndValidateUrl();
+    if (!targetUrl) {
+        showError("参数错误，无法访问");
+        return;
+    }
+    
+    console.log("目标URL:", targetUrl);
+    
+    // 创建iframe并处理加载状态
+    var iframe = document.createElement('iframe');
+    iframe.className = 'content';
+    iframe.src = targetUrl;
+    iframe.onload = function() {
+        // 隐藏加载容器（延迟0.3秒，优化过渡效果）
+        setTimeout(function() {
+            document.getElementById('loadingContainer').classList.add('hidden');
+        }, 300);
+    };
+    iframe.onerror = function() {
+        showError("页面加载失败，可能是网络错误或跨域限制");
+    };
+    
+    // 添加iframe到页面
+    document.body.appendChild(iframe);
+    
+    // 绑定滚动事件（修复跨域问题）
+    bindMouseWhee(iframe);
+    
+    // 超时检测（10秒加载超时）
+    setTimeout(function() {
+        if (!document.getElementById('loadingContainer').classList.contains('hidden')) {
+            showError("页面加载超时，请检查网络");
+        }
+    }, 10000);
+})();
+
+// 显示错误提示
+function showError(message) {
+    var errorTip = document.getElementById('errorTip');
+    var retryBtn = document.getElementById('retryBtn');
+    errorTip.textContent = message;
+    errorTip.style.display = 'block';
+    retryBtn.style.display = 'block';
+}
+
+// 鼠标滚轮事件处理（优化跨域兼容）
 var firefox = navigator.userAgent.indexOf('Firefox') != -1;
-
-// 修改鼠标滚轮事件处理，避免跨域错误提示
 function MouseWheel(e, doc) {
     try {
-        e.preventDefault && e.preventDefault();
-        e.returnValue = false;
-        var up = firefox && e.detail < 0 || e.wheelDelta > 0;
-        doc.body.scrollTop = doc.documentElement.scrollTop += up ? -50 : 50;
+        e.preventDefault ? e.preventDefault() : (e.returnValue = false);
+        var up = firefox ? e.detail < 0 : e.wheelDelta > 0;
+        var scrollStep = 30; // 减小滚动步长，更流畅
+        if (doc.body.scrollTop !== undefined) {
+            doc.body.scrollTop += up ? -scrollStep : scrollStep;
+        } else if (doc.documentElement.scrollTop !== undefined) {
+            doc.documentElement.scrollTop += up ? -scrollStep : scrollStep;
+        }
     } catch (e) {
-        console.log('跨域环境下无法控制滚动:', e);
+        // 跨域时忽略错误，不影响页面
     }
 }
 
 function bindMouseWhee(ifr) {
     try {
-        // 检查是否同源
         var isSameOrigin = false;
         try {
-            // 尝试访问origin属性验证是否同源
             var iframeOrigin = new URL(ifr.src).origin;
             isSameOrigin = window.location.origin === iframeOrigin;
         } catch (e) {
-            console.log('无法验证同源性:', e);
+            console.log('跨域检测:', e);
         }
-
+        
         if (isSameOrigin) {
             var doc = ifr.contentWindow.document;
             if (firefox) {
                 doc.addEventListener('DOMMouseScroll', function(e) {
                     MouseWheel(e, doc);
-                }, false);
+                }, { passive: false });
             } else {
                 doc.onmousewheel = function(e) {
                     MouseWheel(e || ifr.contentWindow.event, doc);
                 };
             }
-        } else {
-            console.log('检测到跨域iframe，将不绑定滚动事件以避免安全错误');
         }
     } catch (e) {
-        console.log('绑定滚动事件失败:', e);
+        console.error('绑定滚动事件失败:', e);
     }
 }
 </script>
