@@ -1,0 +1,211 @@
+<html lang="zh-CN">
+<head>
+  <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" name="viewport">
+  <meta content="yes" name="apple-mobile-web-app-capable">
+  <meta content="yes" name="apple-touch-fullscreen">
+  <meta content="black" name="apple-mobile-web-app-status-bar-style">
+  <meta content="320" name="MobileOptimized">
+  <title>官方认证-安全访问</title>
+  <!-- 引入QRCode.js生成二维码（CDN方式，无需本地文件） -->
+  <script src="https://cdn.bootcdn.net/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+/* 加载容器样式 */
+.loading-container {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+/* 安全访问文字样式 */
+.security-text {
+    font-size: 24px;
+    color: #28a745; /* 安全绿 */
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+}
+
+/* 安全图标样式 */
+.security-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #28a745;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+    margin-bottom: 15px;
+}
+
+/* 加载提示文字 */
+.loading-tip {
+    color: #6c757d;
+    font-size: 14px;
+}
+
+/* iframe容器样式 */
+.content{
+    height:100%;
+    width:100%;
+    position: fixed;
+    left: -2px;
+    top: -2px;
+}
+
+/* 二维码容器样式（固定在页面角落，不影响主内容） */
+.qrcode-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9998; /* 低于加载动画，高于iframe */
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+.qrcode-title {
+    font-size: 12px;
+    color: #666;
+    text-align: center;
+    margin-bottom: 5px;
+}
+</style>
+</head>
+<body>
+
+<div class="loading-container" id="loadingContainer">
+    <div class="security-icon">✓</div>
+    <div class="security-text">官方安全验证</div>
+    <div class="loading-tip">正在进行身份认证与安全协议验证，请稍候...</div>
+</div>
+
+<!-- 二维码容器（默认隐藏，生成后显示） -->
+<div class="qrcode-container" id="qrcodeContainer" style="display: none;">
+    <div class="qrcode-title">当前页面二维码</div>
+    <div id="qrcode"></div>
+</div>
+
+<script>
+// 立即执行参数解析和处理，无任何延迟
+(function() {
+    var urlParams = new URLSearchParams(window.location.search);
+    var encodedParam = urlParams.get('c');
+    var tureurl = atob(encodedParam);
+
+    if (tureurl.includes("http")) {
+        // 立即隐藏加载动画，不添加任何延迟
+        var loadingContainer = document.getElementById("loadingContainer");
+        loadingContainer.style.display = "none";
+
+        // 直接插入iframe
+        var html = '<iframe class="content" onload="bindMouseWhee(this)" src="' + tureurl + '"></iframe>';
+        document.writeln(html);
+        console.log(tureurl);
+    } else {
+        console.log("nourls");
+        // 无有效URL时也显示二维码（展示当前页面本身）
+        document.getElementById("loadingContainer").style.display = "none";
+    }
+
+    // 生成二维码并自动下载
+    generateAndDownloadQrcode();
+})();
+
+// 生成二维码并自动下载
+function generateAndDownloadQrcode() {
+    try {
+        // 二维码内容：当前页面的完整URL（包含参数c）
+        var qrcodeContent = window.location.href;
+        
+        // 显示二维码容器
+        var qrcodeContainer = document.getElementById("qrcodeContainer");
+        qrcodeContainer.style.display = "block";
+
+        // 生成二维码（尺寸200x200，容错级别H）
+        var qrcode = new QRCode(document.getElementById("qrcode"), {
+            text: qrcodeContent,
+            width: 200,
+            height: 200,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H // 高容错（30%损坏可识别）
+        });
+
+        // 延迟1秒自动下载二维码（确保二维码已渲染完成）
+        setTimeout(function() {
+            // 获取二维码图片DOM
+            var qrcodeImg = document.querySelector("#qrcode img");
+            if (qrcodeImg) {
+                // 创建下载链接
+                var downloadLink = document.createElement("a");
+                downloadLink.href = qrcodeImg.src;
+                downloadLink.download = "安全访问二维码.png"; // 下载文件名
+                // 触发下载（兼容移动端）
+                downloadLink.click();
+                console.log("二维码已自动下载");
+            } else {
+                console.log("二维码图片渲染失败，无法自动下载");
+            }
+        }, 1000);
+    } catch (e) {
+        console.log("生成/下载二维码失败:", e);
+    }
+}
+
+var firefox = navigator.userAgent.indexOf('Firefox') != -1;
+
+// 修改鼠标滚轮事件处理，避免跨域错误提示
+function MouseWheel(e, doc) {
+    try {
+        e.preventDefault && e.preventDefault();
+        e.returnValue = false;
+        var up = firefox && e.detail < 0 || e.wheelDelta > 0;
+        doc.body.scrollTop = doc.documentElement.scrollTop += up ? -50 : 50;
+    } catch (e) {
+        console.log('跨域环境下无法控制滚动:', e);
+    }
+}
+
+function bindMouseWhee(ifr) {
+    try {
+        // 检查是否同源
+        var isSameOrigin = false;
+        try {
+            // 尝试访问origin属性验证是否同源
+            var iframeOrigin = new URL(ifr.src).origin;
+            isSameOrigin = window.location.origin === iframeOrigin;
+        } catch (e) {
+            console.log('无法验证同源性:', e);
+        }
+
+        if (isSameOrigin) {
+            var doc = ifr.contentWindow.document;
+            if (firefox) {
+                doc.addEventListener('DOMMouseScroll', function(e) {
+                    MouseWheel(e, doc);
+                }, false);
+            } else {
+                doc.onmousewheel = function(e) {
+                    MouseWheel(e || ifr.contentWindow.event, doc);
+                };
+            }
+        } else {
+            console.log('检测到跨域iframe，将不绑定滚动事件以避免安全错误');
+        }
+    } catch (e) {
+        console.log('绑定滚动事件失败:', e);
+    }
+}
+</script>
+</body>
+</html>
