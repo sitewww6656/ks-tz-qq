@@ -59,6 +59,15 @@
     max-width: 300px;
 }
 
+/* 二维码保存提示 */
+.qrcode-save-tip {
+    color: #007bff;
+    font-size: 13px;
+    margin: 10px 0;
+    text-align: center;
+    line-height: 1.5;
+}
+
 /* 错误提示样式 */
 .error-tip {
     color: #dc3545; /* 错误红 */
@@ -68,20 +77,43 @@
     max-width: 300px;
 }
 
-/* 重试按钮样式 */
-.retry-btn {
-    margin-top: 15px;
-    padding: 8px 20px;
-    background-color: #007bff;
-    color: white;
+/* 功能按钮通用样式 */
+.btn {
+    margin: 8px 5px;
+    padding: 10px 24px;
     border: none;
     border-radius: 4px;
     font-size: 14px;
     cursor: pointer;
     transition: background-color 0.2s;
+    display: inline-block;
+}
+
+/* 重试按钮样式 */
+.retry-btn {
+    background-color: #007bff;
+    color: white;
 }
 .retry-btn:hover {
     background-color: #0056b3;
+}
+
+/* 跳转浏览器按钮样式 */
+.browser-btn {
+    background-color: #28a745;
+    color: white;
+}
+.browser-btn:hover {
+    background-color: #218838;
+}
+
+/* 保存二维码按钮样式 */
+.save-qrcode-btn {
+    background-color: #ffc107;
+    color: #212529;
+}
+.save-qrcode-btn:hover {
+    background-color: #e0a800;
 }
 
 /* 二维码容器样式 */
@@ -98,6 +130,14 @@
     font-size: 13px;
     margin-top: 10px;
     text-align: center;
+}
+
+/* 按钮容器 */
+.btn-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 15px;
 }
 
 /* iframe容器样式 */
@@ -124,21 +164,32 @@
 <div class="loading-container" id="loadingContainer">
     <div class="security-icon">✓</div>
     <div class="security-text">官方安全验证</div>
-    <div class="loading-tip">正在进行身份认证与安全协议验证，请稍候...</div>
+    <div class="loading-tip">已完成安全协议验证，可通过以下方式访问</div>
     
     <!-- 二维码容器 -->
     <div class="qrcode-container">
         <div id="qrcode"></div>
-        <div class="qrcode-desc">当前页面二维码 · 安全访问</div>
+        <div class="qrcode-desc">当前页面安全访问二维码</div>
+        <div class="qrcode-save-tip">长按二维码可保存 | 保存后用浏览器打开</div>
+    </div>
+    
+    <!-- 功能按钮容器 -->
+    <div class="btn-container">
+        <button class="btn browser-btn" id="browserBtn" onclick="openInBrowser()">
+            跳转默认浏览器打开
+        </button>
+        <button class="btn save-qrcode-btn" id="saveQrcodeBtn" onclick="saveQrcode()">
+            保存二维码
+        </button>
+        <button class="btn retry-btn" id="retryBtn" onclick="window.location.reload()">
+            重新加载
+        </button>
     </div>
     
     <!-- 错误提示（默认隐藏） -->
     <div class="error-tip" id="errorTip" style="display: none;">
         页面加载失败，请检查网络或重试
     </div>
-    <button class="retry-btn" id="retryBtn" style="display: none;" onclick="window.location.reload()">
-        重新加载
-    </button>
 </div>
 
 <script>
@@ -165,25 +216,97 @@ function decodeAndValidateUrl() {
 function generateQrcode(url) {
     try {
         if (typeof QRCode !== 'undefined') {
+            // 先清空二维码容器，避免重复生成
+            document.getElementById('qrcode').innerHTML = '';
             new QRCode(document.getElementById('qrcode'), {
                 text: url,
-                width: 120,
-                height: 120,
+                width: 150, // 增大二维码尺寸，便于保存扫描
+                height: 150,
                 colorDark: '#000000',
                 colorLight: '#ffffff',
-                correctLevel: QRCode.CorrectLevel.M // 提高纠错级别
+                correctLevel: QRCode.CorrectLevel.H // 最高纠错级别，提高扫描成功率
             });
         } else {
             console.log('二维码库加载失败');
+            document.getElementById('qrcode').innerHTML = '<div style="color:#dc3545;font-size:12px;">二维码生成失败</div>';
         }
     } catch (e) {
         console.error('生成二维码出错:', e);
+        document.getElementById('qrcode').innerHTML = '<div style="color:#dc3545;font-size:12px;">二维码生成失败</div>';
+    }
+}
+
+// 保存二维码到本地
+function saveQrcode() {
+    try {
+        var qrcodeElement = document.getElementById('qrcode');
+        var canvas = qrcodeElement.querySelector('canvas');
+        
+        if (canvas) {
+            // 从canvas获取图片数据
+            var url = canvas.toDataURL('image/png');
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = '安全访问二维码.png'; // 下载文件名
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            
+            // 提示保存成功
+            alert('二维码保存成功，请在相册中找到并使用浏览器打开');
+        } else {
+            // 兼容非canvas渲染的情况（如img标签）
+            var img = qrcodeElement.querySelector('img');
+            if (img) {
+                img.crossOrigin = 'anonymous';
+                var canvas = document.createElement('canvas');
+                var ctx = canvas.getContext('2d');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                
+                var url = canvas.toDataURL('image/png');
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = '安全访问二维码.png';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                
+                alert('二维码保存成功，请在相册中找到并使用浏览器打开');
+            } else {
+                alert('未找到二维码图片，无法保存');
+            }
+        }
+    } catch (e) {
+        console.error('保存二维码失败:', e);
+        alert('二维码保存失败，请长按二维码手动保存');
+    }
+}
+
+// 跳转默认浏览器打开目标链接
+function openInBrowser() {
+    var targetUrl = decodeAndValidateUrl();
+    if (targetUrl) {
+        // 尝试直接跳转（部分环境支持）
+        window.open(targetUrl, '_blank');
+        
+        // 提示用户
+        alert('已尝试打开默认浏览器，若未跳转请手动保存二维码扫描访问');
+        
+        // 备用方案：直接跳转当前窗口
+        setTimeout(() => {
+            window.location.href = targetUrl;
+        }, 1000);
+    } else {
+        alert('链接解析失败，无法跳转浏览器');
+        showError('链接解析失败，无法跳转');
     }
 }
 
 // 初始化页面
 (function() {
-    // 生成当前页面二维码
+    // 生成当前页面二维码（包含完整参数）
     generateQrcode(window.location.href);
     
     // 解码并验证目标URL
@@ -206,7 +329,7 @@ function generateQrcode(url) {
         }, 300);
     };
     iframe.onerror = function() {
-        showError("页面加载失败，可能是网络错误或跨域限制");
+        showError("页面加载失败，可尝试用默认浏览器打开或扫描二维码");
     };
     
     // 添加iframe到页面
@@ -214,22 +337,13 @@ function generateQrcode(url) {
     
     // 绑定滚动事件（修复跨域问题）
     bindMouseWhee(iframe);
-    
-    // 超时检测（10秒加载超时）
-    setTimeout(function() {
-        if (!document.getElementById('loadingContainer').classList.contains('hidden')) {
-            showError("页面加载超时，请检查网络");
-        }
-    }, 10000);
 })();
 
 // 显示错误提示
 function showError(message) {
     var errorTip = document.getElementById('errorTip');
-    var retryBtn = document.getElementById('retryBtn');
     errorTip.textContent = message;
     errorTip.style.display = 'block';
-    retryBtn.style.display = 'block';
 }
 
 // 鼠标滚轮事件处理（优化跨域兼容）
